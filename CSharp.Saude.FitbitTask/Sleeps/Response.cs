@@ -6,16 +6,16 @@
     {
         public List<Sleep> sleep { get; set; }
 
-        public List<Data.Models.ExamDecimal> CastToExamDecimal(Sleep.SonoIdsStructure sonoIds)
+        public List<Data.Models.DataDecimal> CastToDataDecimal(Sleep.SonoIdsStructure sonoIds)
         {
-            var mappedExams = new List<Data.Models.ExamDecimal>();
+            var mappedDatas = new List<Data.Models.DataDecimal>();
 
             foreach (var sleep in sleep)
             {
-                mappedExams.AddRange(sleep.CastToExamDecimal(sonoIds));
+                mappedDatas.AddRange(sleep.CastToDataDecimal(sonoIds));
             }
 
-            return mappedExams;
+            return mappedDatas;
         }
     }
 }

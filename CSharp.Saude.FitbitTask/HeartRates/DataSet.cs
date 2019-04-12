@@ -7,16 +7,16 @@
         public string time { get; set; }
         public string value { get; set; }
 
-        public Data.Models.ExamDecimal CastToExamDecimal(Guid cardioGroupId, DateTime collectionDate)
+        public Data.Models.DataDecimal CastToDataDecimal(Guid cardioGroupId, DateTime collectionDate)
         {
-            var exam = new Data.Models.ExamDecimal
+            var data = new Data.Models.DataDecimal
             {
                 CollectionDate = collectionDate,
                 DecimalValue = decimal.Parse(value),
                 GroupId = cardioGroupId,
             };
 
-            return exam;
+            return data;
         }
     }
 }

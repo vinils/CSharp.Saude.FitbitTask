@@ -6,11 +6,11 @@
     using System.Text;
     using System.Threading.Tasks;
 
-    class Program
+    public class Program
     {
         public static bool hasRefreshed = false;
 
-        public static void ExamBulkInsert(string dataUrlService, ICollection<Data.Models.Exam> exams)
+        public static void DataBulkInsert(string dataUrlService, ICollection<Data.Models.Data> datas)
         {
             var dataUriStr = dataUrlService;
             var dataUri = new Uri(dataUriStr);
@@ -22,7 +22,7 @@
             //    Console.WriteLine("{0} {1} {2}", p.Id, p.Name, p.ParentId);
             //}
 
-            var bulkInsert = Default.ExtensionMethods.BulkInsert(container.Exams, exams);
+            var bulkInsert = Default.ExtensionMethods.BulkInsert(container.Datas, datas);
             bulkInsert.Execute();
 
             //var group = new Data.Models.Group()
@@ -37,15 +37,17 @@
             //{
             //    Console.WriteLine("Response: {0}", operationResponse.StatusCode);
             //}
+            System.Diagnostics.Debug.WriteLine("run called");
+
         }
 
         public static void Run(Info info)
         {
-            var exams = RequestData.Test(info);
-            ExamBulkInsert(info.DataUriService, exams);
+            var datas = RequestData.Test(info);
+            DataBulkInsert(info.DataUriService, datas);
         }
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Info info = Info.Load();
             try

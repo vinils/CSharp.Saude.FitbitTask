@@ -56,11 +56,16 @@
 
         public static Sleeps.Response Sleep(string acessToken)
         {
-            var client = new RestClient("https://api.fitbit.com/1.2/user/-/sleep/list.json?limit=100&sort=desc&beforeDate=" + DateTime.Today.AddDays(1).ToString("yyyy-MM-dd") + "&offset=0");
+            var beforeDate = DateTime.Today.AddDays(1);
+            var url = "https://api.fitbit.com/1.2/user/-/sleep/list.json?limit=100&sort=desc&beforeDate="
+                + beforeDate.ToString("yyyy-MM-dd") + "&offset=0";
+            var client = new RestClient(url);
             var request = new RestRequest(Method.GET);
+
             request.AddHeader("cache-control", "no-cache");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
             request.AddHeader("Authorization", "Bearer " + acessToken);
+
             var response = client.Execute<Sleeps.Response>(request);
 
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
@@ -71,37 +76,37 @@
             return response.Data;
         }
 
-        public static List<Data.Models.Exam> Test(Info info)
+        public static List<Data.Models.Data> Test(Info info)
         {
-            var mappedExams = new List<Data.Models.Exam>();
+            var mappedDatas = new List<Data.Models.Data>();
             var sleepData = Sleep(info.AcessToken);
 
-            mappedExams.AddRange(sleepData.CastToExamDecimal(SonoIds));
+            mappedDatas.AddRange(sleepData.CastToDataDecimal(SonoIds));
 
 
             var cardioGroupId = new Guid("C0EFE267-E8ED-4B79-A125-DB15ABC0780D");
             var date = DateTime.Today;
             var heartRateData = HeartRate(info.AcessToken, date);
 
-            mappedExams.AddRange(heartRateData.ActivitiesHeartIntradays.CastToExamDecimal(cardioGroupId, date));
+            mappedDatas.AddRange(heartRateData.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date));
 
             var date1 = DateTime.Today.AddDays(-1);
             var heartRateData1 = HeartRate(info.AcessToken, date1);
-            mappedExams.AddRange(heartRateData1.ActivitiesHeartIntradays.CastToExamDecimal(cardioGroupId, date1));
+            mappedDatas.AddRange(heartRateData1.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date1));
 
             var date2 = DateTime.Today.AddDays(-2);
             var heartRateData2 = HeartRate(info.AcessToken, date2);
-            mappedExams.AddRange(heartRateData2.ActivitiesHeartIntradays.CastToExamDecimal(cardioGroupId, date2));
+            mappedDatas.AddRange(heartRateData2.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date2));
 
             var date3 = DateTime.Today.AddDays(-3);
             var heartRateData3 = HeartRate(info.AcessToken, date3);
-            mappedExams.AddRange(heartRateData3.ActivitiesHeartIntradays.CastToExamDecimal(cardioGroupId, date3));
+            mappedDatas.AddRange(heartRateData3.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date3));
 
             var date4 = DateTime.Today.AddDays(-4);
             var heartRateData4 = HeartRate(info.AcessToken, date4);
-            mappedExams.AddRange(heartRateData4.ActivitiesHeartIntradays.CastToExamDecimal(cardioGroupId, date4));
+            mappedDatas.AddRange(heartRateData4.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date4));
 
-            return mappedExams;
+            return mappedDatas;
         }
     }
 }

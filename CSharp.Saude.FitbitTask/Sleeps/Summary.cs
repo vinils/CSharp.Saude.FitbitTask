@@ -32,18 +32,18 @@
         public SummaryData awake { get; set; }
         public SummaryData restless { get; set; }
 
-        public List<Data.Models.ExamDecimal> CastToExamDecimal(DateTime collectionDate, SummaryIds summaryIds)
+        public List<Data.Models.DataDecimal> CastToDataDecimal(DateTime collectionDate, SummaryIds summaryIds)
         {
-            var mappedExams = new List<Data.Models.ExamDecimal>();
-            mappedExams.AddRange(SummaryData.CastToExamDecimal(this.deep, collectionDate, summaryIds.Deep, summaryIds.DeepCount));
-            mappedExams.AddRange(SummaryData.CastToExamDecimal(this.light, collectionDate, summaryIds.Light, summaryIds.LightCount));
-            mappedExams.AddRange(SummaryData.CastToExamDecimal(this.rem, collectionDate, summaryIds.Rem, summaryIds.RemCount));
-            mappedExams.AddRange(SummaryData.CastToExamDecimal(this.wake, collectionDate, summaryIds.Wake, summaryIds.WakeCount));
+            var mappedDatas = new List<Data.Models.DataDecimal>();
+            mappedDatas.AddRange(SummaryData.CastToDataDecimal(this.deep, collectionDate, summaryIds.Deep, summaryIds.DeepCount));
+            mappedDatas.AddRange(SummaryData.CastToDataDecimal(this.light, collectionDate, summaryIds.Light, summaryIds.LightCount));
+            mappedDatas.AddRange(SummaryData.CastToDataDecimal(this.rem, collectionDate, summaryIds.Rem, summaryIds.RemCount));
+            mappedDatas.AddRange(SummaryData.CastToDataDecimal(this.wake, collectionDate, summaryIds.Wake, summaryIds.WakeCount));
 
-            mappedExams.AddRange(SummaryData.CastToExamDecimal(this.asleep, collectionDate, summaryIds.Asleep, summaryIds.AsleepCount));
-            mappedExams.AddRange(SummaryData.CastToExamDecimal(this.awake, collectionDate, summaryIds.Awake, summaryIds.AwakeCount));
-            mappedExams.AddRange(SummaryData.CastToExamDecimal(this.restless, collectionDate, summaryIds.Restless, summaryIds.RestlessCount));
-            return mappedExams;
+            mappedDatas.AddRange(SummaryData.CastToDataDecimal(this.asleep, collectionDate, summaryIds.Asleep, summaryIds.AsleepCount));
+            mappedDatas.AddRange(SummaryData.CastToDataDecimal(this.awake, collectionDate, summaryIds.Awake, summaryIds.AwakeCount));
+            mappedDatas.AddRange(SummaryData.CastToDataDecimal(this.restless, collectionDate, summaryIds.Restless, summaryIds.RestlessCount));
+            return mappedDatas;
         }
     }
 }

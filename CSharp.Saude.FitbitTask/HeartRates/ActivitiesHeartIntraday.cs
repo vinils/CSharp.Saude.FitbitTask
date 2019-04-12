@@ -7,21 +7,21 @@
     {
         public List<DataSet> dataset { get; set; }
 
-        public List<Data.Models.ExamDecimal> CastToExamDecimal(Guid cardioGroupId, DateTime date)
+        public List<Data.Models.DataDecimal> CastToDataDecimal(Guid cardioGroupId, DateTime date)
         {
-            var mappedExams = new List<Data.Models.ExamDecimal>();
+            var mappedDatas = new List<Data.Models.DataDecimal>();
 
-            foreach (var data in dataset)
+            foreach (var dt in dataset)
             {
                 var collectionDate = DateTime
-                    .Parse(date.ToString("yyyy-MM-dd") + "T" + data.time);
+                    .Parse(date.ToString("yyyy-MM-dd") + "T" + dt.time);
 
-                var exam = data.CastToExamDecimal(cardioGroupId, collectionDate);
+                var data = dt.CastToDataDecimal(cardioGroupId, collectionDate);
 
-                mappedExams.Add(exam);
+                mappedDatas.Add(data);
             }
 
-            return mappedExams;
+            return mappedDatas;
         }
     }
 }

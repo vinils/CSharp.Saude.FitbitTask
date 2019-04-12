@@ -36,55 +36,55 @@
         public string startTime { get; set; }
         public string type { get; set; }
 
-        public List<Data.Models.ExamDecimal> CastToExamDecimal(SonoIdsStructure sonoIds)
+        public List<Data.Models.DataDecimal> CastToDataDecimal(SonoIdsStructure sonoIds)
         {
-            var mappedExams = new List<Data.Models.ExamDecimal>();
+            var mappedDatas = new List<Data.Models.DataDecimal>();
             var collectionDate = DateTime
                 .Parse(this.startTime);
 
-            mappedExams.Add(new Data.Models.ExamDecimal()
+            mappedDatas.Add(new Data.Models.DataDecimal()
             {
                 CollectionDate = collectionDate,
                 DecimalValue = timeInBed,
                 GroupId = sonoIds.Totals.TimeInBed.Id,
             });
 
-            mappedExams.Add(new Data.Models.ExamDecimal()
+            mappedDatas.Add(new Data.Models.DataDecimal()
             {
                 CollectionDate = collectionDate,
                 DecimalValue = minutesAsleep,
                 GroupId = sonoIds.Totals.Asleep.Id,
             });
 
-            mappedExams.Add(new Data.Models.ExamDecimal()
+            mappedDatas.Add(new Data.Models.DataDecimal()
             {
                 CollectionDate = collectionDate,
                 DecimalValue = efficiency,
                 GroupId = sonoIds.Totals.Efficiency.Id,
             });
 
-            mappedExams.Add(new Data.Models.ExamDecimal()
+            mappedDatas.Add(new Data.Models.DataDecimal()
             {
                 CollectionDate = collectionDate,
                 DecimalValue = duration,
                 GroupId = sonoIds.Totals.Duration.Id,
             });
 
-            mappedExams.Add(new Data.Models.ExamDecimal()
+            mappedDatas.Add(new Data.Models.DataDecimal()
             {
                 CollectionDate = collectionDate,
                 DecimalValue = minutesToFallAsleep,
                 GroupId = sonoIds.Totals.FallAsleep.Id,
             });
 
-            mappedExams.Add(new Data.Models.ExamDecimal()
+            mappedDatas.Add(new Data.Models.DataDecimal()
             {
                 CollectionDate = collectionDate,
                 DecimalValue = minutesAfterWakeup,
                 GroupId = sonoIds.Totals.AfterWakeup.Id,
             });
 
-            mappedExams.Add(new Data.Models.ExamDecimal()
+            mappedDatas.Add(new Data.Models.DataDecimal()
             {
                 CollectionDate = collectionDate,
                 DecimalValue = minutesAwake,
@@ -92,7 +92,7 @@
             });
 
 
-            mappedExams.AddRange(this.levels.summary.CastToExamDecimal(collectionDate, sonoIds.Summary));
+            mappedDatas.AddRange(this.levels.summary.CastToDataDecimal(collectionDate, sonoIds.Summary));
 
             //foreach(var data in sleep.levels.data)
             //{
@@ -108,7 +108,7 @@
             //    }
             //}
 
-            return mappedExams;
+            return mappedDatas;
 
 
         }
