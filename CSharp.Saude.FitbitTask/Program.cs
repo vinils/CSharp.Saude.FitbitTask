@@ -90,26 +90,26 @@
             mappedDatas = new List<global::Data.Models.Data>();
         }
 
-        public static void LoadAllHeartRate(Info info)
+        public static void LoadAllHeartRate(Info info, DateTime? startDate = null)
         {
-            var date = new DateTime(2016, 1, 1);
+            startDate = startDate ?? new DateTime(2016, 1, 1);
             var mappedDatas = new List<global::Data.Models.Data>();
-            while (date <= DateTime.Today)
+            while (startDate <= DateTime.Today)
             {
                 for (var timewait = 1; timewait <= 140; timewait++)
                 {
                     for (var timeinsert = 1; timeinsert <= 5; timeinsert++)
                     {
                         var cardioGroupId = new Guid("C0EFE267-E8ED-4B79-A125-DB15ABC0780D");
-                        var heartRateData = RequestData.HeartRate(info.AcessToken, date);
+                        var heartRateData = RequestData.HeartRate(info.AcessToken, startDate.Value);
 
                         if (heartRateData.ActivitiesHeartIntradays != null)
                         {
-                            mappedDatas.AddRange(heartRateData.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date));
+                            mappedDatas.AddRange(heartRateData.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, startDate.Value));
                         }
 
-                        System.Diagnostics.Debug.WriteLine(date);
-                        date = date.AddDays(1);
+                        System.Diagnostics.Debug.WriteLine(startDate);
+                        startDate = startDate.Value.AddDays(1);
                     }
 
                     DataBulkInsert(info.DataUriService, mappedDatas);
