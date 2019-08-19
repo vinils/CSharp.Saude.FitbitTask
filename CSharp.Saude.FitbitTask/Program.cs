@@ -52,7 +52,7 @@
             Info info = Info.Load();
             try
             {
-                RequestToken.Test(info);
+                //RequestToken.Test(info);
                 Run(info);
             }
             catch (Exception ex)
