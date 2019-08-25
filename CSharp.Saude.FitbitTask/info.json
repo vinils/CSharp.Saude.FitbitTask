@@ -1,11 +1,11 @@
 {
-    "MyEmail": "vinicius.lourenco@gmail.com",
-    "MyEmailPassword": "Gmail009",
-    "DataUriService": "http://192.168.15.35:8002/odata/v4",
-    "ClientId": "22D9PB",
-    "ClientSecret": "0ace5cca58f4fde90d76c6541eb768c4",
-    "Code": "d1102c0a624c8c15d85db32b1f758a2597db3181",
-    "AcessToken": "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkQ5UEIiLCJzdWIiOiI2SlJTQ0YiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyc29jIHJzZXQgcmFjdCBybG9jIHJ3ZWkgcmhyIHJwcm8gcm51dCByc2xlIiwiZXhwIjoxNTY2MjA0NjkyLCJpYXQiOjE1NjYxNzU4OTJ9.0RWfmIaQ-cS5i0igvQ_Cy-b9t-SP-UKlrmYP4uDo24c",
-    "RefreshToken": "60fe3a063235f85c113869aa180f170a0ae4a067d310e493cab08c7c61b8030c",
-    "ExperisIn": 31536000
+  "MyEmail": "email@email.com",
+  "MyEmailPassword": "Senha",
+  "DataUriService": "http://localhost/odata/v4",
+  "ClientId": "AS123SA",
+  "ClientSecret": "654a654a6s5d4f6a5s4df6a54sd",
+  "Code": "as65d4fa65s4df654asd",
+  "AcessToken": "eyJhbGciOiJIUzI1NiJ9.eyasdfasdfasdfasdASDFASDFAsdfasdfASdfpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyc29jIHJhY3QgcnNldCBybG9jIHJ3ZWkgcmASDfASDfasdFasdfASdfs1232DU1MDc5LCJpYXQiOjE1NDc0MjYyNzl9.8VggBkiI9hITxT5HkrY9Qq9zdsbwV-Ls1DuHiS6nlYA",
+  "RefreshToken": "654as5d4f6a5s4df65a4sd6f45a6sd54fa6s5d4f6a5s4dfasdf",
+  "ExperisIn": 31536000
 }
