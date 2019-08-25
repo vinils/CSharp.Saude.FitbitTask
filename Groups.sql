@@ -4,8 +4,6 @@ insert into [Group] (Id, Name, Initials, ParentId, MeasureUnit) VALUES (
 --select * from [Group] where ParentId = '47B974F0-00CC-415B-AF2A-93F010491212'
 
 insert into [Group] (Id, Name, Initials, ParentId, MeasureUnit) VALUES (
-'BA70277A-2FDF-4B3F-B2AC-1521C4BEB48D', 'Físico', NULL, '47B974F0-00CC-415B-AF2A-93F010491212', NULL)
-insert into [Group] (Id, Name, Initials, ParentId, MeasureUnit) VALUES (
 'BFDF8F5E-C514-416D-B6B0-35B196F5CA96', 'Peso', NULL, '47B974F0-00CC-415B-AF2A-93F010491212', NULL)
 insert into [Group] (Id, Name, Initials, ParentId, MeasureUnit) VALUES (
 '3BBF57E4-4A32-4590-BBDC-70510109ECEB', 'Sono', NULL, '47B974F0-00CC-415B-AF2A-93F010491212', NULL)
@@ -13,8 +11,6 @@ insert into [Group] (Id, Name, Initials, ParentId, MeasureUnit) VALUES (
 '4665DB6B-38B5-4F19-9833-A8AD61DB1587', 'Local', NULL, '47B974F0-00CC-415B-AF2A-93F010491212', NULL)
 insert into [Group] (Id, Name, Initials, ParentId, MeasureUnit) VALUES (
 '3A6EFE92-00A4-4B1B-BC40-C5B2C83CF0C1', 'Cardio', NULL, '47B974F0-00CC-415B-AF2A-93F010491212', NULL)
-insert into [Group] (Id, Name, Initials, ParentId, MeasureUnit) VALUES (
-'98B34F14-6DAA-3EE4-4EB1-E6D4F691960E', 'Exames', NULL, '47B974F0-00CC-415B-AF2A-93F010491212', NULL)
 
 ----CARDIO
 --select * from [Group] where ParentId = '3A6EFE92-00A4-4B1B-BC40-C5B2C83CF0C1'
