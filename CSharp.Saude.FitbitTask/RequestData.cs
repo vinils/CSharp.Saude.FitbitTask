@@ -76,34 +76,34 @@
             return response.Data;
         }
 
-        public static List<Data.Models.Data> Test(Info info)
+        public static List<Data.Models.Data> Test(string acessToken)
         {
             var mappedDatas = new List<Data.Models.Data>();
-            var sleepData = Sleep(info.AcessToken);
+            var sleepData = Sleep(acessToken);
 
             mappedDatas.AddRange(sleepData.CastToDataDecimal(SonoIds));
 
 
             var cardioGroupId = new Guid("C0EFE267-E8ED-4B79-A125-DB15ABC0780D");
             var date = DateTime.Today;
-            var heartRateData = HeartRate(info.AcessToken, date);
+            var heartRateData = HeartRate(acessToken, date);
 
             mappedDatas.AddRange(heartRateData.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date));
 
             var date1 = DateTime.Today.AddDays(-1);
-            var heartRateData1 = HeartRate(info.AcessToken, date1);
+            var heartRateData1 = HeartRate(acessToken, date1);
             mappedDatas.AddRange(heartRateData1.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date1));
 
             var date2 = DateTime.Today.AddDays(-2);
-            var heartRateData2 = HeartRate(info.AcessToken, date2);
+            var heartRateData2 = HeartRate(acessToken, date2);
             mappedDatas.AddRange(heartRateData2.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date2));
 
             var date3 = DateTime.Today.AddDays(-3);
-            var heartRateData3 = HeartRate(info.AcessToken, date3);
+            var heartRateData3 = HeartRate(acessToken, date3);
             mappedDatas.AddRange(heartRateData3.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date3));
 
             var date4 = DateTime.Today.AddDays(-4);
-            var heartRateData4 = HeartRate(info.AcessToken, date4);
+            var heartRateData4 = HeartRate(acessToken, date4);
             mappedDatas.AddRange(heartRateData4.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date4));
 
             return mappedDatas;
