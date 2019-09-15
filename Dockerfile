@@ -17,5 +17,4 @@ COPY . ./
 WORKDIR /app
 RUN msbuild /p:Configuration=Release
 
-#ENTRYPOINT ["C:\\app\\CSharp.Saude.FitbitTask\\bin\\Release\\CSharp.Saude.FitbitTask.exe"]
 CMD ".\\CSharp.Saude.FitbitTask\\bin\\Release\\CSharp.Saude.FitbitTask.exe"
