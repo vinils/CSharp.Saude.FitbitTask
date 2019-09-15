@@ -23,7 +23,7 @@
                         ENVIRONMENT_VARIABLES.RequestLimitCount = value;
                         break;
                     case 1:
-                    case var x when (x >= ENVIRONMENT_VARIABLES.RequestLimitMax):
+                    case var x when (x >= ENVIRONMENT_VARIABLES.RequestLimitMax + 1):
                         ENVIRONMENT_VARIABLES.RequestLimitStart = DateTime.Now;
                         ENVIRONMENT_VARIABLES.RequestLimitCount = 1;
                         break;
@@ -41,7 +41,7 @@
         private static IRestResponse<T> ExecuteRequest<T>(Func<IRestResponse<T>> execute) where T : new()
         {
             IRestResponse<T> ret;
-            if (LIMIT_COUNT == ENVIRONMENT_VARIABLES.RequestLimitMax)
+            if (LIMIT_COUNT >= ENVIRONMENT_VARIABLES.RequestLimitMax)
             {
                 ENVIRONMENT_VARIABLES.SaveJson();
                 var limitTime = ENVIRONMENT_VARIABLES.RequestLimitStart.Value.AddHours(1);
@@ -112,8 +112,7 @@
                 case (HttpStatusCode)429:
                     ENVIRONMENT_VARIABLES.RequestLimitCount = ENVIRONMENT_VARIABLES.RequestLimitMax;
                     Console.WriteLine("Error! Too many requests fitbit HeartRate");
-                    HeartRate(accessToken, date);
-                    break;
+                    return HeartRate(accessToken, date);
             }
 
             return response.Data;
@@ -178,6 +177,7 @@
                     mappedDatas.AddRange(heartRates);
                     if (ENVIRONMENT_VARIABLES.RequestLimitCount >= ENVIRONMENT_VARIABLES.RequestLimitMax)
                     {
+                        callBack(mappedDatas, date);
                         mappedDatas = new List<Data.Models.Data>();
                     }
                 }, endDate);
