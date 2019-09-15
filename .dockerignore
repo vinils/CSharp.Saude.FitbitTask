@@ -1,0 +1,24 @@
+# directories
+packages/
+bin/
+obj/
+out/
+.vs/
+.git/
+
+# files
+Dockerfile*
+*.trx
+*.md
+
+
+CSharp.Saude.FitbitTask/bin/
+CSharp.Saude.FitbitTask/obj/
+CSharp.Saude.FitbitTask/out/
+CSharp.Saude.FitbitTask/.vs/
+CSharp.Saude.FitbitTask/.git/
+CSharp.Data.Client/bin/
+CSharp.Data.Client/obj/
+CSharp.Data.Client/out/
+CSharp.Data.Client/.vs/
+CSharp.Data.Client/.git/

@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Email.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="HeartRates\ActivitiesHeartIntraday.cs" />
     <Compile Include="HeartRates\DataSet.cs" />
     <Compile Include="HeartRates\Response.cs" />
@@ -64,9 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <Content Include="info.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\CSharp.Data.Client\CSharp.Data.Client\CSharp.Data.Client.csproj">

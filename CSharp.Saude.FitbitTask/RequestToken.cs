@@ -9,6 +9,7 @@
 
     public class RequestToken
     {
+        public static Info ENVIRONMENT_VARIABLES = Info.ENVIRONMENT_VARIABLES;
         public string ClientId { get; private set; }
         public string ClientSecret { get; private set; }
 
@@ -79,27 +80,32 @@
             request.AddParameter("undefined", "grant_type=refresh_token&refresh_token=" + refreshToken, ParameterType.RequestBody);
 
             var response = client.Execute<TokenResponse>(request);
+
+            if (!string.IsNullOrEmpty(response.Content) && response.Content.Contains("Refresh token invalid"))
+            {
+                throw new Exception(response.Content);
+            }
+
             return response.Data;
         }
 
-        public static void Test(Info info)
+        public static void Test(string clientId, string clientSecret, int experisIn)
         {
-            var request = new RequestToken(info.ClientId, info.ClientSecret);
+            var request = new RequestToken(clientId, clientSecret);
             //for apps tokens infos https://dev.fitbit.com/apps
-            var currentFitBitAppToken = "https://dev.fitbit.com/apps/details/" + info.ClientId;
-            var url = "https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=" + info.ClientId + "&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Ffitbittasks&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight&expires_in=" + info.ExperisIn;
+            var currentFitBitAppToken = "https://dev.fitbit.com/apps/details/" + clientId;
+            var url = "https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=" + clientId + "&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Ffitbittasks&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight&expires_in=" + experisIn;
             //response of the url above with code http://localhost:5000/fitbittasks?code=80072dd3c94ffc627837c4b7a1471db327c73b29#_=_
-            var responseToken = request.Token(info.Code);
+            ENVIRONMENT_VARIABLES.Code = "";
+            var responseToken = request.Token(ENVIRONMENT_VARIABLES.Code);
             if(responseToken.access_token != null && responseToken.refresh_token != null)
             {
-                info.AcessToken = responseToken.access_token;
-                info.RefreshToken = responseToken.refresh_token;
-                info.Update();
+                ENVIRONMENT_VARIABLES.AccessToken = responseToken.access_token;
+                ENVIRONMENT_VARIABLES.RefreshToken = responseToken.refresh_token;
             }
             //var refreshResponse = request.Refresh(info.RefreshToken);
-            //info.AcessToken = refreshResponse.access_token;
-            //info.RefreshToken = refreshResponse.refresh_token;
-            //info.Update();
+            //ENVIRONMENT_VARIABLES.AccessToken = refreshResponse.access_token;
+            //ENVIRONMENT_VARIABLES.RefreshToken = refreshResponse.refresh_token;
         }
     }
 }

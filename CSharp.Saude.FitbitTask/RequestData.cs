@@ -3,9 +3,66 @@
     using RestSharp;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
 
     public class RequestData
     {
+        public static Info ENVIRONMENT_VARIABLES = Info.ENVIRONMENT_VARIABLES;
+        private static readonly string FITBIT_URI = "https://api.fitbit.com";
+        //private static int limit_count = 0;
+        public static int LIMIT_COUNT
+        {
+            get => ENVIRONMENT_VARIABLES.RequestLimitCount;
+            private set
+            {
+                switch (value)
+                {
+                    case 0:
+                        ENVIRONMENT_VARIABLES.RequestLimitStart = null;
+                        ENVIRONMENT_VARIABLES.RequestLimitCount = value;
+                        break;
+                    case 1:
+                    case var x when (x >= ENVIRONMENT_VARIABLES.RequestLimitMax):
+                        ENVIRONMENT_VARIABLES.RequestLimitStart = DateTime.Now;
+                        ENVIRONMENT_VARIABLES.RequestLimitCount = 1;
+                        break;
+                    default:
+                        ENVIRONMENT_VARIABLES.RequestLimitCount = value;
+                        break;
+                }
+
+                Console.WriteLine("ENVIRONMENT_VARIABLES - RequestLimitCount:{0} RequestLimitStart:{1}",
+                                  ENVIRONMENT_VARIABLES.RequestLimitCount,
+                                  ENVIRONMENT_VARIABLES.RequestLimitStart);
+            }
+        }
+
+        private static IRestResponse<T> ExecuteRequest<T>(Func<IRestResponse<T>> execute) where T : new()
+        {
+            IRestResponse<T> ret;
+            if (LIMIT_COUNT == ENVIRONMENT_VARIABLES.RequestLimitMax)
+            {
+                ENVIRONMENT_VARIABLES.SaveJson();
+                var limitTime = ENVIRONMENT_VARIABLES.RequestLimitStart.Value.AddHours(1);
+                //var timeToWait = new TimeSpan(1, 0, 0);
+                var timeToWait = limitTime - DateTime.Now;
+                var isPositive = timeToWait == timeToWait.Duration();
+
+                if (isPositive)
+                {
+                    System.Threading.Thread.Sleep(timeToWait);
+                }
+
+                LIMIT_COUNT = 0;
+            }
+
+            ret = execute();
+            LIMIT_COUNT += 1;
+
+            return ret;
+        }
+
         public static Sleeps.Sleep.SonoIdsStructure SonoIds = new Sleeps.Sleep.SonoIdsStructure()
         {
             Totals = new Sleeps.Sleep.SonoTotals()
@@ -37,76 +94,105 @@
             }
         };
 
-        public static HeartRates.Response HeartRate(string acessToken, DateTime date)
+        public static HeartRates.Response HeartRate(string accessToken, DateTime date)
         {
-            var client = new RestClient("https://api.fitbit.com/1/user/-/activities/heart/date/" + date.ToString("yyyy-MM-dd") + "/1d/1sec/time/00:00/23:59.json");
+            var client = new RestClient(FITBIT_URI + "/1/user/-/activities/heart/date/" 
+                + date.ToString("yyyy-MM-dd") + "/1d/1sec/time/00:00/23:59.json");
             var request = new RestRequest(Method.GET);
             request.AddHeader("cache-control", "no-cache");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
-            request.AddHeader("Authorization", "Bearer " + acessToken);
-            var response = client.Execute<HeartRates.Response>(request);
+            request.AddHeader("Authorization", "Bearer " + accessToken);
+            var response = ExecuteRequest(() => client.Execute<HeartRates.Response>(request));
 
-            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            switch(response.StatusCode)
             {
-                throw new UnauthorizedAccessException();
+                case HttpStatusCode.Unauthorized:
+                    Console.WriteLine("Error! Unauthorized fitbit HeartRate request");
+                    throw new UnauthorizedAccessException();
+                case (HttpStatusCode)429:
+                    ENVIRONMENT_VARIABLES.RequestLimitCount = ENVIRONMENT_VARIABLES.RequestLimitMax;
+                    Console.WriteLine("Error! Too many requests fitbit HeartRate");
+                    HeartRate(accessToken, date);
+                    break;
             }
 
             return response.Data;
         }
-
-        public static Sleeps.Response Sleep(string acessToken)
+        public static Sleeps.Response Sleep(string accessToken)
         {
             var beforeDate = DateTime.Today.AddDays(1);
-            var url = "https://api.fitbit.com/1.2/user/-/sleep/list.json?limit=100&sort=desc&beforeDate="
+            var url = FITBIT_URI + "/1.2/user/-/sleep/list.json?limit=100&sort=desc&beforeDate="
                 + beforeDate.ToString("yyyy-MM-dd") + "&offset=0";
             var client = new RestClient(url);
             var request = new RestRequest(Method.GET);
 
             request.AddHeader("cache-control", "no-cache");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
-            request.AddHeader("Authorization", "Bearer " + acessToken);
+            request.AddHeader("Authorization", "Bearer " + accessToken);
 
-            var response = client.Execute<Sleeps.Response>(request);
+            var response = ExecuteRequest(() => client.Execute<Sleeps.Response>(request));
+            Console.WriteLine("sleep.response.status: {0}", response.StatusCode);
 
-            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            switch (response.StatusCode)
             {
-                throw new UnauthorizedAccessException();
+                case HttpStatusCode.Unauthorized:
+                    Console.WriteLine("Error! Unauthorized fitbit Sleep request");
+                    throw new UnauthorizedAccessException();
+                case (HttpStatusCode)429:
+                    ENVIRONMENT_VARIABLES.RequestLimitCount = ENVIRONMENT_VARIABLES.RequestLimitMax;
+                    Console.WriteLine("Error! Too many requests fitbit Sleep");
+                    Sleep(accessToken);
+                    break;
             }
 
+            Console.WriteLine("sleep.response.data: {0}", response.Data);
             return response.Data;
         }
 
-        public static List<Data.Models.Data> Test(string acessToken)
+        public static void ForEachHearRate(string accessToken, DateTime startDate, Action<List<Data.Models.DataDecimal>, DateTime> callBack, DateTime? endDate, int incrementDays = 1)
+        {
+            var cardioGroupId = new Guid("C0EFE267-E8ED-4B79-A125-DB15ABC0780D");
+            var endDate2 = endDate ?? DateTime.Now;
+
+            startDate.ForEach((date) => {
+                Console.WriteLine("HeartRate: {0} - Last Run: {1}", date.ToString(), DateTime.Now);
+                Console.WriteLine("Days left: {0} - Hours left: {1}",
+                    (endDate2 - date).TotalDays,
+                    Convert.ToInt32((endDate2 - date).TotalDays / ENVIRONMENT_VARIABLES.RequestLimitMax));
+                Console.WriteLine("Expected end: {0}", endDate2.AddHours(Convert.ToInt32((endDate2 - date).TotalDays / ENVIRONMENT_VARIABLES.RequestLimitMax * -1)));
+
+                var heartRateData = HeartRate(accessToken, date);
+                callBack(heartRateData.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date), date);
+            }, endDate2, incrementDays);
+        }
+        public static void Run(string accessToken, DateTime startDate, Action<List<Data.Models.Data>, DateTime> callBack, DateTime? endDate)
         {
             var mappedDatas = new List<Data.Models.Data>();
-            var sleepData = Sleep(acessToken);
 
-            mappedDatas.AddRange(sleepData.CastToDataDecimal(SonoIds));
+            try
+            {
+                var sleepData = Sleep(accessToken);
+                mappedDatas.AddRange(sleepData.CastToDataDecimal(SonoIds));
 
+                ForEachHearRate(accessToken, startDate, (heartRates, date) => {
+                    mappedDatas.AddRange(heartRates);
+                    if (ENVIRONMENT_VARIABLES.RequestLimitCount >= ENVIRONMENT_VARIABLES.RequestLimitMax)
+                    {
+                        mappedDatas = new List<Data.Models.Data>();
+                    }
+                }, endDate);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                ENVIRONMENT_VARIABLES.SaveJson();
 
-            var cardioGroupId = new Guid("C0EFE267-E8ED-4B79-A125-DB15ABC0780D");
-            var date = DateTime.Today;
-            var heartRateData = HeartRate(acessToken, date);
-
-            mappedDatas.AddRange(heartRateData.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date));
-
-            var date1 = DateTime.Today.AddDays(-1);
-            var heartRateData1 = HeartRate(acessToken, date1);
-            mappedDatas.AddRange(heartRateData1.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date1));
-
-            var date2 = DateTime.Today.AddDays(-2);
-            var heartRateData2 = HeartRate(acessToken, date2);
-            mappedDatas.AddRange(heartRateData2.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date2));
-
-            var date3 = DateTime.Today.AddDays(-3);
-            var heartRateData3 = HeartRate(acessToken, date3);
-            mappedDatas.AddRange(heartRateData3.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date3));
-
-            var date4 = DateTime.Today.AddDays(-4);
-            var heartRateData4 = HeartRate(acessToken, date4);
-            mappedDatas.AddRange(heartRateData4.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date4));
-
-            return mappedDatas;
+                if (mappedDatas.Any())
+                    callBack(mappedDatas, DateTime.Now);
+            }
         }
     }
 }
