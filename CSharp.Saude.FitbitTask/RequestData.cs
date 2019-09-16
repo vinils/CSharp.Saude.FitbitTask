@@ -165,8 +165,11 @@
                 callBack(heartRateData.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date), date);
             }, endDate2, incrementDays);
         }
-        public static void Run(string accessToken, DateTime startDate, Action<List<Data.Models.Data>, DateTime> callBack, DateTime? endDate)
+        public static void Run(string accessToken, DateTime startDate, Action<List<Data.Models.Data>, DateTime> callBack, DateTime? endDate, int? callBackBreaks = null)
         {
+            if (!callBackBreaks.HasValue)
+                callBackBreaks = ENVIRONMENT_VARIABLES.RequestLimitMax;
+
             var mappedDatas = new List<Data.Models.Data>();
 
             try
@@ -176,7 +179,8 @@
 
                 ForEachHearRate(accessToken, startDate, (heartRates, date) => {
                     mappedDatas.AddRange(heartRates);
-                    if (ENVIRONMENT_VARIABLES.RequestLimitCount >= ENVIRONMENT_VARIABLES.RequestLimitMax)
+                    if (ENVIRONMENT_VARIABLES.RequestLimitCount % callBackBreaks == 0 
+                    && ENVIRONMENT_VARIABLES.RequestLimitCount != 0)
                     {
                         callBack(mappedDatas, date);
                         mappedDatas = new List<Data.Models.Data>();
