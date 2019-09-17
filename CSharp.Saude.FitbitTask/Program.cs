@@ -48,20 +48,23 @@
         {
             try
             {
-                //Environment.SetEnvironmentVariable("MY_EMAIL", "vinicius.lourenco@gmail.com");
-                //Environment.SetEnvironmentVariable("MY_EMAIL_PASSWORD", "Gmail009");
-                //Environment.SetEnvironmentVariable("DATA_URI_SERVICE", "http://192.168.15.35:8002/odata/v4");
-                //Environment.SetEnvironmentVariable("CLIENT_ID", "22D9PB");
-                //Environment.SetEnvironmentVariable("CLIENT_SECRET", "0ace5cca58f4fde90d76c6541eb768c4");
-                //Environment.SetEnvironmentVariable("CODE", "6ff8c6a25a3fe65e11d770e90313ace287930d80");
-                //Environment.SetEnvironmentVariable("ACESS_TOKEN", "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkQ5UEIiLCJzdWIiOiI2SlJTQ0YiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyc29jIHJzZXQgcmFjdCBybG9jIHJ3ZWkgcmhyIHJudXQgcnBybyByc2xlIiwiZXhwIjoxNTY4NTQxNzAyLCJpYXQiOjE1Njg1MTI5MDJ9.mwDgcRd_srmFzh-6j4i-AuHtz07F2oJK29fmrHjvjus");
-                //Environment.SetEnvironmentVariable("REFRESH_TOKEN", "0ec7949c91d57f8092b39c0058de517d8de77e73966f1a0202c2e0327e11434d");
-                //Environment.SetEnvironmentVariable("EXPERIS_IN", 31536000.ToString());
-                //Environment.SetEnvironmentVariable("REQUEST_LIMIT_MAX", 140.ToString());
-                //Environment.SetEnvironmentVariable("REQUEST_LIMIT_COUNT", 0.ToString());
-                //Environment.SetEnvironmentVariable("REQUEST_LIMIT_START", null);
-                //Environment.SetEnvironmentVariable("START_DATE", DateTime.Now.AddDays(-8).ToString());
-                //Environment.SetEnvironmentVariable("END_DATE", DateTime.Now.ToString());
+#if DEBUG
+                //couldn't find a better way to set env while debugging :/
+                Environment.SetEnvironmentVariable("MY_EMAIL", "vinicius.lourenco@gmail.com");
+                Environment.SetEnvironmentVariable("MY_EMAIL_PASSWORD", "Gmail009");
+                Environment.SetEnvironmentVariable("DATA_URI_SERVICE", "http://192.168.15.35:8002/odata/v4");
+                Environment.SetEnvironmentVariable("CLIENT_ID", "22D9PB");
+                Environment.SetEnvironmentVariable("CLIENT_SECRET", "0ace5cca58f4fde90d76c6541eb768c4");
+                Environment.SetEnvironmentVariable("CODE", "6ff8c6a25a3fe65e11d770e90313ace287930d80");
+                Environment.SetEnvironmentVariable("ACESS_TOKEN", "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkQ5UEIiLCJzdWIiOiI2SlJTQ0YiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyc29jIHJzZXQgcmFjdCBybG9jIHJ3ZWkgcmhyIHJudXQgcnBybyByc2xlIiwiZXhwIjoxNTY4NTQxNzAyLCJpYXQiOjE1Njg1MTI5MDJ9.mwDgcRd_srmFzh-6j4i-AuHtz07F2oJK29fmrHjvjus");
+                Environment.SetEnvironmentVariable("REFRESH_TOKEN", "0ec7949c91d57f8092b39c0058de517d8de77e73966f1a0202c2e0327e11434d");
+                Environment.SetEnvironmentVariable("EXPERIS_IN", 31536000.ToString());
+                Environment.SetEnvironmentVariable("REQUEST_LIMIT_MAX", 140.ToString());
+                Environment.SetEnvironmentVariable("REQUEST_LIMIT_COUNT", 0.ToString());
+                Environment.SetEnvironmentVariable("REQUEST_LIMIT_START", null);
+                Environment.SetEnvironmentVariable("START_DATE", DateTime.Now.AddDays(-8).ToString());
+                Environment.SetEnvironmentVariable("END_DATE", DateTime.Now.ToString());
+#endif
 
                 Console.WriteLine("ENVIRONMENT_VARIABLES:");
                 var environmentJson = JObject.Parse(JsonConvert.SerializeObject(ENVIRONMENT_VARIABLES));
@@ -76,9 +79,11 @@
                     ENVIRONMENT_VARIABLES.ClientSecret,
                     ENVIRONMENT_VARIABLES.MyEmail,
                     ENVIRONMENT_VARIABLES.MyEmailPassword,
-                    ENVIRONMENT_VARIABLES.StartDate.Value,
                     ENVIRONMENT_VARIABLES.EndDate.Value
                     );
+
+                ENVIRONMENT_VARIABLES.StartDate = null;
+                ENVIRONMENT_VARIABLES.EndDate = null;
             }
             catch (Exception)
             {
@@ -86,22 +91,34 @@
             }
             finally
             {
-                ENVIRONMENT_VARIABLES.StartDate = null;
-                ENVIRONMENT_VARIABLES.EndDate = null;
                 ENVIRONMENT_VARIABLES.SaveJson();
                 Console.WriteLine("Finished at {0}", DateTime.Now.ToString());
+                var environmentJson = JObject.Parse(JsonConvert.SerializeObject(ENVIRONMENT_VARIABLES));
+
+                foreach (var pair in environmentJson)
+                {
+                    Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
+                }
             }
         }
 
-        private static void Run(string dataUriService, string clientId, string clientSecret, string myEmail, string myEmailPassword, DateTime startDate, DateTime endDate)
+        private static void Run(string dataUriService, string clientId, string clientSecret, string myEmail, string myEmailPassword, DateTime endDate)
         {
+            var startDate = ENVIRONMENT_VARIABLES.StartDate.Value;
             try
             {
+#if DEBUG
                 RequestToken.Test(clientId, clientSecret, ENVIRONMENT_VARIABLES.ExperisIn);
+#endif
                 RequestData.Run(ENVIRONMENT_VARIABLES.AccessToken, startDate, (requestDatas, lastExecuteDate) => {
                     Console.WriteLine("DataBulkInsert until {0}", lastExecuteDate);
-                    DataBulkInsert(dataUriService, requestDatas);
-                }, endDate);
+                    if(requestDatas.Any())
+                    {
+                        DataBulkInsert(dataUriService, requestDatas);
+                        hasRefreshed = false;
+                    }
+                    ENVIRONMENT_VARIABLES.StartDate = lastExecuteDate;
+                }, endDate, 5);
             }
             catch (Exception ex)
             {
@@ -114,7 +131,7 @@
                     ENVIRONMENT_VARIABLES.AccessToken = refreshResponse.access_token;
                     ENVIRONMENT_VARIABLES.RefreshToken = refreshResponse.refresh_token;
 
-                    Run(dataUriService, clientId, clientSecret, myEmail, myEmailPassword, startDate, endDate);
+                    Run(dataUriService, clientId, clientSecret, myEmail, myEmailPassword, endDate);
                 }
                 else
                 {

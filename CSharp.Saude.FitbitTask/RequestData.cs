@@ -156,7 +156,7 @@
             startDate.ForEach((date) => {
                 Console.WriteLine("HeartRate: {0} - Last Run: {1}", date.ToString(), DateTime.Now);
                 Console.WriteLine("Days left: {0} - Hours left: {1}",
-                    (endDate2 - date).TotalDays,
+                    Convert.ToInt32((endDate2 - date).TotalDays),
                     Convert.ToInt32((endDate2 - date).TotalDays / ENVIRONMENT_VARIABLES.RequestLimitMax));
                 Console.WriteLine("Expected end: {0}",
                                   ENVIRONMENT_VARIABLES.RequestLimitStart.Value.AddHours(Convert.ToInt32((endDate2 - date).TotalDays / ENVIRONMENT_VARIABLES.RequestLimitMax)));
@@ -186,6 +186,7 @@
                         mappedDatas = new List<Data.Models.Data>();
                     }
                 }, endDate);
+
             }
             catch (Exception)
             {
