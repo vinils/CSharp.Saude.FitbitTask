@@ -87,6 +87,7 @@
             }
             catch (Exception)
             {
+                Console.WriteLine("Exception at program main");
                 throw;
             }
             finally
@@ -111,9 +112,9 @@
                 RequestToken.Test(clientId, clientSecret, ENVIRONMENT_VARIABLES.ExperisIn);
 #endif
                 RequestData.Run(ENVIRONMENT_VARIABLES.AccessToken, startDate, (requestDatas, lastExecuteDate) => {
-                    Console.WriteLine("DataBulkInsert until {0}", lastExecuteDate);
                     if(requestDatas.Any())
                     {
+                        Console.WriteLine("DataBulkInsert until {0}", lastExecuteDate);
                         DataBulkInsert(dataUriService, requestDatas);
                         hasRefreshed = false;
                     }

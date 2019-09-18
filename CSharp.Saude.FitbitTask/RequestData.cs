@@ -104,7 +104,7 @@
             request.AddHeader("Authorization", "Bearer " + accessToken);
             var response = ExecuteRequest(() => client.Execute<HeartRates.Response>(request));
 
-            switch(response.StatusCode)
+            switch (response.StatusCode)
             {
                 case HttpStatusCode.Unauthorized:
                     Console.WriteLine("Error! Unauthorized fitbit HeartRate request");
@@ -113,6 +113,11 @@
                     ENVIRONMENT_VARIABLES.RequestLimitCount = ENVIRONMENT_VARIABLES.RequestLimitMax;
                     Console.WriteLine("Error! Too many requests fitbit HeartRate");
                     return HeartRate(accessToken, date);
+                case HttpStatusCode.BadRequest:
+                    Console.WriteLine(client.BaseUrl);
+                    Console.WriteLine(response.Content);
+                    return new HeartRates.Response() { ActivitiesHeartIntradays = new HeartRates.ActivitiesHeartIntraday() { dataset = new List<HeartRates.DataSet>() } };
+                    //throw new Exception(response.Content);
             }
 
             return response.Data;
