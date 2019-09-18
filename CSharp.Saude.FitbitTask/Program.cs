@@ -114,7 +114,7 @@
                 RequestData.Run(ENVIRONMENT_VARIABLES.AccessToken, startDate, (requestDatas, lastExecuteDate) => {
                     if(requestDatas.Any())
                     {
-                        Console.WriteLine("DataBulkInsert until {0}", lastExecuteDate);
+                        Console.WriteLine("DataBulkInsert of {0} registers until {1}", requestDatas.Count(), lastExecuteDate);
                         DataBulkInsert(dataUriService, requestDatas);
                         hasRefreshed = false;
                     }
@@ -136,11 +136,13 @@
                 }
                 else
                 {
+                    ENVIRONMENT_VARIABLES.StartDate = startDate;
                     Console.WriteLine(ex);
                     Email.Send(
                         myEmail,
                         myEmailPassword,
                         JsonConvert.SerializeObject(ex));
+                    throw ex;
                 }
             }
         }
