@@ -23,7 +23,7 @@
                         ENVIRONMENT_VARIABLES.RequestLimitCount = value;
                         break;
                     case 1:
-                    case var x when (x >= ENVIRONMENT_VARIABLES.RequestLimitMax + 1):
+                    case var x when (x >= ENVIRONMENT_VARIABLES.RequestLimitMax + 1 || (DateTime.Now - ENVIRONMENT_VARIABLES.RequestLimitStart).Value.Hours >= 1):
                         ENVIRONMENT_VARIABLES.RequestLimitStart = DateTime.Now;
                         ENVIRONMENT_VARIABLES.RequestLimitCount = 1;
                         break;

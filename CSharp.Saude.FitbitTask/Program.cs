@@ -109,15 +109,15 @@
             try
             {
 #if DEBUG
-                RequestToken.Test(clientId, clientSecret, ENVIRONMENT_VARIABLES.ExperisIn);
+                //RequestToken.Test(clientId, clientSecret, ENVIRONMENT_VARIABLES.ExperisIn);
 #endif
                 RequestData.Run(ENVIRONMENT_VARIABLES.AccessToken, startDate, (requestDatas, lastExecuteDate) => {
                     if(requestDatas.Any())
                     {
                         Console.WriteLine("DataBulkInsert of {0} registers until {1}", requestDatas.Count(), lastExecuteDate);
                         DataBulkInsert(dataUriService, requestDatas);
-                        hasRefreshed = false;
                     }
+                    hasRefreshed = false;
                     ENVIRONMENT_VARIABLES.StartDate = lastExecuteDate;
                 }, endDate, 5);
             }
