@@ -49,17 +49,18 @@
             try
             {
 #if DEBUG
+
                 //couldn't find a better way to set env while debugging :/
-                Environment.SetEnvironmentVariable("MY_EMAIL", "vinicius.lourenco@gmail.com");
-                Environment.SetEnvironmentVariable("MY_EMAIL_PASSWORD", "Gmail009");
+                Environment.SetEnvironmentVariable("MY_EMAIL", "myemail@email.com");
+                Environment.SetEnvironmentVariable("MY_EMAIL_PASSWORD", "mypassword");
                 Environment.SetEnvironmentVariable("DATA_URI_SERVICE", "http://192.168.15.35:8002/odata/v4");
-                Environment.SetEnvironmentVariable("CLIENT_ID", "22D9PB");
-                Environment.SetEnvironmentVariable("CLIENT_SECRET", "0ace5cca58f4fde90d76c6541eb768c4");
-                Environment.SetEnvironmentVariable("CODE", "6ff8c6a25a3fe65e11d770e90313ace287930d80");
-                Environment.SetEnvironmentVariable("ACESS_TOKEN", "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkQ5UEIiLCJzdWIiOiI2SlJTQ0YiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyc29jIHJzZXQgcmFjdCBybG9jIHJ3ZWkgcmhyIHJudXQgcnBybyByc2xlIiwiZXhwIjoxNTY4NTQxNzAyLCJpYXQiOjE1Njg1MTI5MDJ9.mwDgcRd_srmFzh-6j4i-AuHtz07F2oJK29fmrHjvjus");
-                Environment.SetEnvironmentVariable("REFRESH_TOKEN", "0ec7949c91d57f8092b39c0058de517d8de77e73966f1a0202c2e0327e11434d");
+                Environment.SetEnvironmentVariable("CLIENT_ID", "33EDS6");
+                Environment.SetEnvironmentVariable("CLIENT_SECRET", "897a98sd7f9a8s7df98a7s9df87as9df87");
+                Environment.SetEnvironmentVariable("CODE", "9789a7sd89f7a9sd87fa9s8d7f9a8s7df9a8ds7");
+                Environment.SetEnvironmentVariable("ACESS_TOKEN", "eyJADSFasdFasdFASDFasdfOiIyMkQ5UEIiLCJzdWIiOiI2SlJTQ0YiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyc29jIHJhY3QgcnNldCBybG9jIHJASDFasdfasdfasdfasdfasdFasdfaSdfaSdfasdfEepYXQiOjE1NjY3NDY4OTJ9.C6DwPT-2y2Nt-cCaWy9wx75jZPBg28AxAsbCJdIJf0U");
+                Environment.SetEnvironmentVariable("REFRESH_TOKEN", "7a698sd76f5a6s4d58a7sd5g98adf68sg");
                 Environment.SetEnvironmentVariable("EXPERIS_IN", 31536000.ToString());
-                Environment.SetEnvironmentVariable("REQUEST_LIMIT_MAX", 140.ToString());
+                Environment.SetEnvironmentVariable("REQUEST_LIMIT_MAX", 150.ToString());
                 Environment.SetEnvironmentVariable("REQUEST_LIMIT_COUNT", 0.ToString());
                 Environment.SetEnvironmentVariable("REQUEST_LIMIT_START", null);
                 Environment.SetEnvironmentVariable("START_DATE", DateTime.Now.AddDays(-8).ToString());
