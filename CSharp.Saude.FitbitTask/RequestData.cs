@@ -23,7 +23,7 @@
                         ENVIRONMENT_VARIABLES.RequestLimitCount = value;
                         break;
                     case 1:
-                    case var x when (x >= ENVIRONMENT_VARIABLES.RequestLimitMax):
+                    case var x when (x >= ENVIRONMENT_VARIABLES.RequestLimitMax + 1 || (DateTime.Now - ENVIRONMENT_VARIABLES.RequestLimitStart).Value.Hours >= 1):
                         ENVIRONMENT_VARIABLES.RequestLimitStart = DateTime.Now;
                         ENVIRONMENT_VARIABLES.RequestLimitCount = 1;
                         break;
@@ -41,7 +41,7 @@
         private static IRestResponse<T> ExecuteRequest<T>(Func<IRestResponse<T>> execute) where T : new()
         {
             IRestResponse<T> ret;
-            if (LIMIT_COUNT == ENVIRONMENT_VARIABLES.RequestLimitMax)
+            if (LIMIT_COUNT >= ENVIRONMENT_VARIABLES.RequestLimitMax)
             {
                 ENVIRONMENT_VARIABLES.SaveJson();
                 var limitTime = ENVIRONMENT_VARIABLES.RequestLimitStart.Value.AddHours(1);
@@ -104,7 +104,7 @@
             request.AddHeader("Authorization", "Bearer " + accessToken);
             var response = ExecuteRequest(() => client.Execute<HeartRates.Response>(request));
 
-            switch(response.StatusCode)
+            switch (response.StatusCode)
             {
                 case HttpStatusCode.Unauthorized:
                     Console.WriteLine("Error! Unauthorized fitbit HeartRate request");
@@ -112,8 +112,12 @@
                 case (HttpStatusCode)429:
                     ENVIRONMENT_VARIABLES.RequestLimitCount = ENVIRONMENT_VARIABLES.RequestLimitMax;
                     Console.WriteLine("Error! Too many requests fitbit HeartRate");
-                    HeartRate(accessToken, date);
-                    break;
+                    return HeartRate(accessToken, date);
+                case HttpStatusCode.BadRequest:
+                    Console.WriteLine(client.BaseUrl);
+                    Console.WriteLine(response.Content);
+                    return new HeartRates.Response() { ActivitiesHeartIntradays = new HeartRates.ActivitiesHeartIntraday() { dataset = new List<HeartRates.DataSet>() } };
+                    //throw new Exception(response.Content);
             }
 
             return response.Data;
@@ -157,16 +161,20 @@
             startDate.ForEach((date) => {
                 Console.WriteLine("HeartRate: {0} - Last Run: {1}", date.ToString(), DateTime.Now);
                 Console.WriteLine("Days left: {0} - Hours left: {1}",
-                    (endDate2 - date).TotalDays,
+                    Convert.ToInt32((endDate2 - date).TotalDays),
                     Convert.ToInt32((endDate2 - date).TotalDays / ENVIRONMENT_VARIABLES.RequestLimitMax));
-                Console.WriteLine("Expected end: {0}", endDate2.AddHours(Convert.ToInt32((endDate2 - date).TotalDays / ENVIRONMENT_VARIABLES.RequestLimitMax * -1)));
+                Console.WriteLine("Expected end: {0}",
+                                  ENVIRONMENT_VARIABLES.RequestLimitStart.Value.AddHours(Convert.ToInt32((endDate2 - date).TotalDays / ENVIRONMENT_VARIABLES.RequestLimitMax)));
 
                 var heartRateData = HeartRate(accessToken, date);
                 callBack(heartRateData.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date), date);
             }, endDate2, incrementDays);
         }
-        public static void Run(string accessToken, DateTime startDate, Action<List<Data.Models.Data>, DateTime> callBack, DateTime? endDate)
+        public static void Run(string accessToken, DateTime startDate, Action<List<Data.Models.Data>, DateTime> callBack, DateTime? endDate, int? callBackBreaks = null)
         {
+            if (!callBackBreaks.HasValue)
+                callBackBreaks = ENVIRONMENT_VARIABLES.RequestLimitMax;
+
             var mappedDatas = new List<Data.Models.Data>();
 
             try
@@ -176,11 +184,14 @@
 
                 ForEachHearRate(accessToken, startDate, (heartRates, date) => {
                     mappedDatas.AddRange(heartRates);
-                    if (ENVIRONMENT_VARIABLES.RequestLimitCount >= ENVIRONMENT_VARIABLES.RequestLimitMax)
+                    if (ENVIRONMENT_VARIABLES.RequestLimitCount % callBackBreaks == 0 
+                    && ENVIRONMENT_VARIABLES.RequestLimitCount != 0)
                     {
+                        callBack(mappedDatas, date);
                         mappedDatas = new List<Data.Models.Data>();
                     }
                 }, endDate);
+
             }
             catch (Exception)
             {
