@@ -32,9 +32,9 @@
         public SummaryData awake { get; set; }
         public SummaryData restless { get; set; }
 
-        public List<Data.Models.DataDecimal> CastToDataDecimal(DateTime collectionDate, SummaryIds summaryIds)
+        public List<global::Data.Models.DataDecimal> CastToDataDecimal(DateTime collectionDate, SummaryIds summaryIds)
         {
-            var mappedDatas = new List<Data.Models.DataDecimal>();
+            var mappedDatas = new List<global::Data.Models.DataDecimal>();
             mappedDatas.AddRange(SummaryData.CastToDataDecimal(this.deep, collectionDate, summaryIds.Deep, summaryIds.DeepCount));
             mappedDatas.AddRange(SummaryData.CastToDataDecimal(this.light, collectionDate, summaryIds.Light, summaryIds.LightCount));
             mappedDatas.AddRange(SummaryData.CastToDataDecimal(this.rem, collectionDate, summaryIds.Rem, summaryIds.RemCount));

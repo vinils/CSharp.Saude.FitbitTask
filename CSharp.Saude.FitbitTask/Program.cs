@@ -13,35 +13,32 @@
         public static bool hasRefreshed = false;
         public static Info ENVIRONMENT_VARIABLES = Info.ENVIRONMENT_VARIABLES;
 
-        public static void DataBulkInsert(string dataUrlService, ICollection<Data.Models.Data> datas)
+        public static void DataBulkInsert(string dataUrlService, ICollection<global::Data.Models.Data> datas)
         {
-            var dataUriStr = dataUrlService;
-            var dataUri = new Uri(dataUriStr);
-            var container = new Default.Container(dataUri);
-            container.Timeout = int.MaxValue;
+            try
+            {
+                var dataUriStr = dataUrlService;
+                var dataUri = new Uri(dataUriStr);
+                var container = new Default.Container(dataUri);
+                //container.Timeout = int.MaxValue;
 
-            //foreach (var p in container.Groups)
-            //{
-            //    Console.WriteLine("{0} {1} {2}", p.Id, p.Name, p.ParentId);
-            //}
+                var bulkInsert = Default.ExtensionMethods.BulkInsert(container.Datas, datas);
 
-            var bulkInsert = Default.ExtensionMethods.BulkInsert(container.Datas, datas);
-            bulkInsert.Execute();
+                var task = bulkInsert.ExecuteAsync();
+                while (!task.IsCompleted)
+                {
+                    //  Waiting for command to complete...
+                    System.Threading.Thread.Sleep(2000);
+                }
 
-            //var group = new Data.Models.Group()
-            //{
-            //    Id = Guid.NewGuid(),
-            //    Name = "Yo-yo",
-            //};
+                //var result = bulkInsert.EndExecute(task);
 
-            //container.AddToGroupsV4(group);
-            //var dataServiceResponse = container.SaveChanges();
-            //foreach (var operationResponse in dataServiceResponse)
-            //{
-            //    Console.WriteLine("Response: {0}", operationResponse.StatusCode);
-            //}
-            System.Diagnostics.Debug.WriteLine("run called");
-
+                System.Diagnostics.Debug.WriteLine("run called");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public static void Main(string[] args)
@@ -65,6 +62,7 @@
                 Environment.SetEnvironmentVariable("REQUEST_LIMIT_START", null);
                 Environment.SetEnvironmentVariable("START_DATE", DateTime.Now.AddDays(-8).ToString());
                 Environment.SetEnvironmentVariable("END_DATE", DateTime.Now.ToString());
+
 #endif
 
                 Console.WriteLine("ENVIRONMENT_VARIABLES:");
@@ -86,10 +84,10 @@
                 ENVIRONMENT_VARIABLES.StartDate = null;
                 ENVIRONMENT_VARIABLES.EndDate = null;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Console.WriteLine("Exception at program main");
-                throw;
+                throw ex;
             }
             finally
             {
@@ -110,7 +108,8 @@
             try
             {
 #if DEBUG
-                //RequestToken.Test(clientId, clientSecret, ENVIRONMENT_VARIABLES.ExperisIn);
+                System.Diagnostics.Debugger.Break();
+                RequestToken.Test(clientId, clientSecret, ENVIRONMENT_VARIABLES.ExperisIn);
 #endif
                 RequestData.Run(ENVIRONMENT_VARIABLES.AccessToken, startDate, (requestDatas, lastExecuteDate) => {
                     if(requestDatas.Any())

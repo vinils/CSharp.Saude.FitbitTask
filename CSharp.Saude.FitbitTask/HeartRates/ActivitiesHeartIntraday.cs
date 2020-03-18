@@ -7,9 +7,9 @@
     {
         public List<DataSet> dataset { get; set; }
 
-        public List<Data.Models.DataDecimal> CastToDataDecimal(Guid cardioGroupId, DateTime date)
+        public List<global::Data.Models.DataDecimal> CastToDataDecimal(Guid cardioGroupId, DateTime date)
         {
-            var mappedDatas = new List<Data.Models.DataDecimal>();
+            var mappedDatas = new List<global::Data.Models.DataDecimal>();
 
             foreach (var dt in dataset)
             {

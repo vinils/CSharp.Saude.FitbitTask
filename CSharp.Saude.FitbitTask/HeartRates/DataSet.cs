@@ -7,9 +7,9 @@
         public string time { get; set; }
         public string value { get; set; }
 
-        public Data.Models.DataDecimal CastToDataDecimal(Guid cardioGroupId, DateTime collectionDate)
+        public global::Data.Models.DataDecimal CastToDataDecimal(Guid cardioGroupId, DateTime collectionDate)
         {
-            var data = new Data.Models.DataDecimal
+            var data = new global::Data.Models.DataDecimal
             {
                 CollectionDate = collectionDate,
                 DecimalValue = decimal.Parse(value),

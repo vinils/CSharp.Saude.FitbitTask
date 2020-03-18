@@ -153,7 +153,7 @@
             return response.Data;
         }
 
-        public static void ForEachHearRate(string accessToken, DateTime startDate, Action<List<Data.Models.DataDecimal>, DateTime> callBack, DateTime? endDate, int incrementDays = 1)
+        public static void ForEachHearRate(string accessToken, DateTime startDate, Action<List<global::Data.Models.DataDecimal>, DateTime> callBack, DateTime? endDate, int incrementDays = 1)
         {
             var cardioGroupId = new Guid("C0EFE267-E8ED-4B79-A125-DB15ABC0780D");
             var endDate2 = endDate ?? DateTime.Now;
@@ -170,12 +170,12 @@
                 callBack(heartRateData.ActivitiesHeartIntradays.CastToDataDecimal(cardioGroupId, date), date);
             }, endDate2, incrementDays);
         }
-        public static void Run(string accessToken, DateTime startDate, Action<List<Data.Models.Data>, DateTime> callBack, DateTime? endDate, int? callBackBreaks = null)
+        public static void Run(string accessToken, DateTime startDate, Action<List<global::Data.Models.Data>, DateTime> callBack, DateTime? endDate, int? callBackBreaks = null)
         {
             if (!callBackBreaks.HasValue)
                 callBackBreaks = ENVIRONMENT_VARIABLES.RequestLimitMax;
 
-            var mappedDatas = new List<Data.Models.Data>();
+            var mappedDatas = new List<global::Data.Models.Data>();
 
             try
             {
@@ -188,14 +188,14 @@
                     && ENVIRONMENT_VARIABLES.RequestLimitCount != 0)
                     {
                         callBack(mappedDatas, date);
-                        mappedDatas = new List<Data.Models.Data>();
+                        mappedDatas = new List<global::Data.Models.Data>();
                     }
                 }, endDate);
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
             finally
             {

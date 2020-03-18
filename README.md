@@ -1,9 +1,12 @@
 # CSharp.Saude.FitbitTask
-Load fitbit data task
-<BR>
+Load fitbit data task  
 
-docker build . -t vinils/csharp-saude-fitbittask
-<BR>
+git clone --recurse-submodules https://github.com/vinils/CSharp.Saude.FitbitTask.git CSharp.Saude.FitbitTask_ch  
+cd CSharp.Saude.FitbitTask  
+git submodule update --init --recursive  
+git submodule update --remote --recursive  
+
+docker build . -t vinils/csharp-saude-fitbittask  
 
 docker run -it -d 
 -e MY_EMAIL="myemail@email.com" 

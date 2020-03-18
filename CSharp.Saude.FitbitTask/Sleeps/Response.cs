@@ -6,9 +6,9 @@
     {
         public List<Sleep> sleep { get; set; }
 
-        public List<Data.Models.DataDecimal> CastToDataDecimal(Sleep.SonoIdsStructure sonoIds)
+        public List<global::Data.Models.DataDecimal> CastToDataDecimal(Sleep.SonoIdsStructure sonoIds)
         {
-            var mappedDatas = new List<Data.Models.DataDecimal>();
+            var mappedDatas = new List<global::Data.Models.DataDecimal>();
 
             foreach (var sleep in sleep)
             {

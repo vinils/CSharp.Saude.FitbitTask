@@ -96,6 +96,7 @@
             var currentFitBitAppToken = "https://dev.fitbit.com/apps/details/" + clientId;
             var url = "https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=" + clientId + "&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Ffitbittasks&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight&expires_in=" + experisIn;
             //response of the url above with code http://localhost:5000/fitbittasks?code=80072dd3c94ffc627837c4b7a1471db327c73b29#_=_
+            System.Diagnostics.Debugger.Break();
             ENVIRONMENT_VARIABLES.Code = "";
             var responseToken = request.Token(ENVIRONMENT_VARIABLES.Code);
             if(responseToken.access_token != null && responseToken.refresh_token != null)
