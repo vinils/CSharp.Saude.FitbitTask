@@ -1,20 +1,17 @@
-FROM mcr.microsoft.com/dotnet/framework/sdk:4.7.2 AS build
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
 WORKDIR /app
 
-# copy csproj and restore as distinct layers
-COPY CSharp.Data.Client/*.sln ./CSharp.Data.Client/
-COPY CSharp.Data.Client/CSharp.Data.Client/*.csproj ./CSharp.Data.Client/CSharp.Data.Client/
-COPY CSharp.Data.Client/CSharp.Data.Client/*.config ./CSharp.Data.Client/CSharp.Data.Client/
-RUN nuget restore CSharp.Data.Client/CSharp.Data.Client.sln
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
+WORKDIR /src
+COPY . .
+RUN dotnet restore "./CSharp.Saude.FitbitTask.sln"
+WORKDIR "/src/."
+RUN dotnet build "CSharp.Saude.FitbitTask.sln" -c Release -o /app/build
 
-COPY *.sln .
-COPY CSharp.Saude.FitbitTask/*.csproj ./CSharp.Saude.FitbitTask/
-COPY CSharp.Saude.FitbitTask/*.config ./CSharp.Saude.FitbitTask/
-RUN nuget restore
+FROM build AS publish
+RUN dotnet publish "CSharp.Saude.FitbitTask.sln" -c Release -o /app/publish
 
-# copy everything else and build app
-COPY . ./
+FROM base AS final
 WORKDIR /app
-RUN msbuild /p:Configuration=Release
-
-CMD ".\\CSharp.Saude.FitbitTask\\bin\\Release\\CSharp.Saude.FitbitTask.exe"
+COPY --from=publish /app/publish .
+ENTRYPOINT ["./CSharp.Saude.FitbitTask"]

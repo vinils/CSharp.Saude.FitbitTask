@@ -10,7 +10,7 @@
 
     public class Program
     {
-        public static bool hasRefreshed = false;
+        public static int refreshCount = 0;
         public static Info ENVIRONMENT_VARIABLES = Info.ENVIRONMENT_VARIABLES;
 
         public static void DataBulkInsert(string dataUrlService, ICollection<global::Data.Models.Data> datas)
@@ -48,19 +48,19 @@
 #if DEBUG
 
                 //couldn't find a better way to set env while debugging :/
-                Environment.SetEnvironmentVariable("MY_EMAIL", "myemail@email.com");
-                Environment.SetEnvironmentVariable("MY_EMAIL_PASSWORD", "mypassword");
-                Environment.SetEnvironmentVariable("DATA_URI_SERVICE", "http://192.168.15.35:8002/odata/v4");
-                Environment.SetEnvironmentVariable("CLIENT_ID", "33EDS6");
-                Environment.SetEnvironmentVariable("CLIENT_SECRET", "897a98sd7f9a8s7df98a7s9df87as9df87");
-                Environment.SetEnvironmentVariable("CODE", "9789a7sd89f7a9sd87fa9s8d7f9a8s7df9a8ds7");
-                Environment.SetEnvironmentVariable("ACESS_TOKEN", "eyJADSFasdFasdFASDFasdfOiIyMkQ5UEIiLCJzdWIiOiI2SlJTQ0YiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyc29jIHJhY3QgcnNldCBybG9jIHJASDFasdfasdfasdfasdfasdFasdfaSdfaSdfasdfEepYXQiOjE1NjY3NDY4OTJ9.C6DwPT-2y2Nt-cCaWy9wx75jZPBg28AxAsbCJdIJf0U");
-                Environment.SetEnvironmentVariable("REFRESH_TOKEN", "7a698sd76f5a6s4d58a7sd5g98adf68sg");
+                Environment.SetEnvironmentVariable("MY_EMAIL", "vinicius.lourenco@gmail.com");
+                Environment.SetEnvironmentVariable("MY_EMAIL_PASSWORD", "Gmail009");
+                Environment.SetEnvironmentVariable("DATA_URI_SERVICE", "http://192.168.15.147:8002/odata");
+                Environment.SetEnvironmentVariable("CLIENT_ID", "22D9PB");
+                Environment.SetEnvironmentVariable("CLIENT_SECRET", "a9f178844289ef2e01b4b49afcf9d985");
+                Environment.SetEnvironmentVariable("CODE", "debcfd8f2afa2417657968b836b41e8fb2dad4a2");
+                Environment.SetEnvironmentVariable("ACESS_TOKEN", "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkQ5UEIiLCJzdWIiOiI2SlJTQ0YiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyc29jIHJhY3QgcnNldCBybG9jIHJ3ZWkgcmhyIHJudXQgcnBybyByc2xlIiwiZXhwIjoxNTg0MzA1MDQzLCJpYXQiOjE1ODQyNzYyNDN9.N2pIk8yigntyZ3tFb607fl29enaiRwjPTxuW35K2cOI");
+                Environment.SetEnvironmentVariable("REFRESH_TOKEN", "e3bda6e616f849140d03a2c869b94c56e915918c76de8ca3e5b4e703d04082ce");
                 Environment.SetEnvironmentVariable("EXPERIS_IN", 31536000.ToString());
                 Environment.SetEnvironmentVariable("REQUEST_LIMIT_MAX", 150.ToString());
                 Environment.SetEnvironmentVariable("REQUEST_LIMIT_COUNT", 0.ToString());
                 Environment.SetEnvironmentVariable("REQUEST_LIMIT_START", null);
-                Environment.SetEnvironmentVariable("START_DATE", DateTime.Now.AddDays(-8).ToString());
+                Environment.SetEnvironmentVariable("START_DATE", new DateTime(2020, 01, 01).ToString());
                 Environment.SetEnvironmentVariable("END_DATE", DateTime.Now.ToString());
 
 #endif
@@ -91,7 +91,7 @@
             }
             finally
             {
-                ENVIRONMENT_VARIABLES.SaveJson();
+                //ENVIRONMENT_VARIABLES.SaveJson();
                 Console.WriteLine("Finished at {0}", DateTime.Now.ToString());
                 var environmentJson = JObject.Parse(JsonConvert.SerializeObject(ENVIRONMENT_VARIABLES));
 
@@ -99,6 +99,15 @@
                 {
                     Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
                 }
+
+                string requestLimitStartEnv = null;
+
+                if(ENVIRONMENT_VARIABLES.RequestLimitStart.HasValue)
+                {
+                    requestLimitStartEnv = $"-e REQUEST_LIMIT_START=\"{ENVIRONMENT_VARIABLES.RequestLimitStart.Value.ToString("yyyy-MM-dd")}\"";
+                }
+                
+                Console.WriteLine($"docker run -it -d --name fitbit-task -e MY_EMAIL=\"{ENVIRONMENT_VARIABLES.MyEmail}\" -e MY_EMAIL_PASSWORD=\"{ENVIRONMENT_VARIABLES.MyEmailPassword}\" -e DATA_URI_SERVICE=\"{ENVIRONMENT_VARIABLES.DataUriService}\" -e CLIENT_ID=\"{ENVIRONMENT_VARIABLES.ClientId}\" -e CLIENT_SECRET=\"{ENVIRONMENT_VARIABLES.ClientSecret}\" -e CODE=\"{ENVIRONMENT_VARIABLES.Code}\" -e ACESS_TOKEN=\"{ENVIRONMENT_VARIABLES.AccessToken}\" -e REFRESH_TOKEN=\"{ENVIRONMENT_VARIABLES.RefreshToken}\" -e EXPERIS_IN=\"{ENVIRONMENT_VARIABLES.ExperisIn}\" -e REQUEST_LIMIT_MAX=\"{ENVIRONMENT_VARIABLES.RequestLimitMax}\" -e REQUEST_LIMIT_COUNT=\"{ENVIRONMENT_VARIABLES.RequestLimitCount}\" {(requestLimitStartEnv ?? "")} -e START_DATE=\"{ENVIRONMENT_VARIABLES.StartDate.Value.ToString("yyyy-MM-dd")}\" -e END_DATE=\"{ENVIRONMENT_VARIABLES.EndDate.Value.ToString("yyyy-MM-dd")}\" vinils/csharp-saude-fitbittask");
             }
         }
 
@@ -109,7 +118,12 @@
             {
 #if DEBUG
                 System.Diagnostics.Debugger.Break();
-                RequestToken.Test(clientId, clientSecret, ENVIRONMENT_VARIABLES.ExperisIn);
+                var requestToken = new RequestToken(clientId, clientSecret);
+                var url = "https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=" + clientId + "&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Ffitbittasks&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight&expires_in=" + ENVIRONMENT_VARIABLES.ExperisIn;
+                System.Diagnostics.Debugger.Break();
+                ENVIRONMENT_VARIABLES.Code = "";
+                requestToken.NewToken(ENVIRONMENT_VARIABLES.Code, ENVIRONMENT_VARIABLES.ExperisIn);
+                //RequestToken.Test(clientId, clientSecret, ENVIRONMENT_VARIABLES.ExperisIn);
 #endif
                 RequestData.Run(ENVIRONMENT_VARIABLES.AccessToken, startDate, (requestDatas, lastExecuteDate) => {
                     if(requestDatas.Any())
@@ -117,20 +131,49 @@
                         Console.WriteLine("DataBulkInsert of {0} registers until {1}", requestDatas.Count(), lastExecuteDate);
                         DataBulkInsert(dataUriService, requestDatas);
                     }
-                    hasRefreshed = false;
+                    refreshCount = 0;
                     ENVIRONMENT_VARIABLES.StartDate = lastExecuteDate;
                 }, endDate, 5);
             }
             catch (Exception ex)
             {
-                if (ex is UnauthorizedAccessException && !hasRefreshed)
+                if (ex is UnauthorizedAccessException && refreshCount < 3)
                 {
-                    hasRefreshed = true;
+                    refreshCount++;
 
+                    //var requestToken = new RequestToken(clientId, clientSecret);
+                    //var refreshResponse = requestToken.Refresh(ENVIRONMENT_VARIABLES.RefreshToken);
+                    //ENVIRONMENT_VARIABLES.AccessToken = refreshResponse.access_token;
+                    //ENVIRONMENT_VARIABLES.RefreshToken = refreshResponse.refresh_token;
+
+
+                    RequestToken.TokenResponse refreshResponse = null;
                     var requestToken = new RequestToken(clientId, clientSecret);
-                    var refreshResponse = requestToken.Refresh(ENVIRONMENT_VARIABLES.RefreshToken);
-                    ENVIRONMENT_VARIABLES.AccessToken = refreshResponse.access_token;
-                    ENVIRONMENT_VARIABLES.RefreshToken = refreshResponse.refresh_token;
+
+
+                    if(refreshCount == 1)
+                    {
+                        try
+                        {
+                            refreshResponse = requestToken.Refresh(ENVIRONMENT_VARIABLES.RefreshToken);
+                            ENVIRONMENT_VARIABLES.AccessToken = refreshResponse.access_token;
+                            ENVIRONMENT_VARIABLES.RefreshToken = refreshResponse.refresh_token;
+                        }
+                        catch (Exception ex2)
+                        {
+                            refreshCount++;
+                        }
+                    }
+
+                    if(refreshCount == 2)
+                    {
+                        try
+                        {
+                            requestToken.NewToken(ENVIRONMENT_VARIABLES.Code, ENVIRONMENT_VARIABLES.ExperisIn);
+                        }
+                        catch (Exception)
+                        { }
+                    }
 
                     Run(dataUriService, clientId, clientSecret, myEmail, myEmailPassword, endDate);
                 }
