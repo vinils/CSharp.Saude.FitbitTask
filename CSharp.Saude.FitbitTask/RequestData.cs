@@ -143,38 +143,6 @@
                     Console.WriteLine("Error! Unauthorized fitbit Sleep request");
                     Console.WriteLine("What about:");
                     Console.WriteLine("https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=" + ENVIRONMENT_VARIABLES.ClientId + "&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Ffitbittasks&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight&expires_in=" + ENVIRONMENT_VARIABLES.ExperisIn);
-
-                    //RequestToken.TokenResponse refreshResponse = null;
-                    //var requestToken = new RequestToken(ENVIRONMENT_VARIABLES.ClientId, ENVIRONMENT_VARIABLES.ClientSecret);
-                    //try
-                    //{
-                    //    refreshResponse = requestToken.Refresh(ENVIRONMENT_VARIABLES.RefreshToken);
-
-                    //}
-                    //catch (Exception)
-                    //{
-
-                    //    throw;
-                    //}
-
-                    //if (refreshResponse != null)
-                    //{
-                    //    ENVIRONMENT_VARIABLES.AccessToken = refreshResponse.access_token;
-                    //    ENVIRONMENT_VARIABLES.RefreshToken = refreshResponse.refresh_token;
-                    //}
-                    //else
-                    //{
-                    //    try
-                    //    {
-                    //        requestToken.NewToken(ENVIRONMENT_VARIABLES.Code, ENVIRONMENT_VARIABLES.ExperisIn);
-                    //    }
-                    //    catch (Exception)
-                    //    {
-
-                    //        throw;
-                    //    }
-                    //}
-
                     throw new UnauthorizedAccessException();
                 case (HttpStatusCode)429:
                     ENVIRONMENT_VARIABLES.RequestLimitCount = ENVIRONMENT_VARIABLES.RequestLimitMax;
