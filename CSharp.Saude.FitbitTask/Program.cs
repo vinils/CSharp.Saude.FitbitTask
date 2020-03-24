@@ -186,6 +186,13 @@
                         myEmailPassword,
                         JsonConvert.SerializeObject(ex));
 
+                    string requestLimitStartEnv = null;
+
+                    if (ENVIRONMENT_VARIABLES.RequestLimitStart.HasValue)
+                    {
+                        requestLimitStartEnv = $"-e REQUEST_LIMIT_START=\"{ENVIRONMENT_VARIABLES.RequestLimitStart.Value.ToString("yyyy-MM-dd")}\"";
+                    }
+
                     Console.WriteLine($"docker run -it -d --name fitbit-task -e MY_EMAIL=\"{ENVIRONMENT_VARIABLES.MyEmail}\" -e MY_EMAIL_PASSWORD=\"{ENVIRONMENT_VARIABLES.MyEmailPassword}\" -e DATA_URI_SERVICE=\"{ENVIRONMENT_VARIABLES.DataUriService}\" -e CLIENT_ID=\"{ENVIRONMENT_VARIABLES.ClientId}\" -e CLIENT_SECRET=\"{ENVIRONMENT_VARIABLES.ClientSecret}\" -e CODE=\"{ENVIRONMENT_VARIABLES.Code}\" -e ACESS_TOKEN=\"{ENVIRONMENT_VARIABLES.AccessToken}\" -e REFRESH_TOKEN=\"{ENVIRONMENT_VARIABLES.RefreshToken}\" -e EXPERIS_IN=\"{ENVIRONMENT_VARIABLES.ExperisIn}\" -e REQUEST_LIMIT_MAX=\"{ENVIRONMENT_VARIABLES.RequestLimitMax}\" -e REQUEST_LIMIT_COUNT=\"{ENVIRONMENT_VARIABLES.RequestLimitCount}\" {(requestLimitStartEnv ?? "")} -e START_DATE=\"{ENVIRONMENT_VARIABLES.StartDate.Value.ToString("yyyy-MM-dd")}\" -e END_DATE=\"{ENVIRONMENT_VARIABLES.EndDate.Value.ToString("yyyy-MM-dd")}\" vinils/csharp-saude-fitbittask");
                     throw ex;
                 }
