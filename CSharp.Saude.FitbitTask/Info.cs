@@ -6,36 +6,36 @@
 
     public class Info
     {
-        //private static readonly string filePath = Directory.GetCurrentDirectory() + "//info.json";
+        private static readonly string filePath = Directory.GetCurrentDirectory() + "//info.json";
         public static readonly Info ENVIRONMENT_VARIABLES = new Info();
 
         static Info()
         {
-            //var json = LoadJson();
+            var json = LoadJson();
 
-            //if (json != null)
-            //{
-            //    ENVIRONMENT_VARIABLES.MyEmail = json.MyEmail;
-            //    ENVIRONMENT_VARIABLES.MyEmailPassword = json.MyEmailPassword;
-            //    ENVIRONMENT_VARIABLES.DataUriService = json.DataUriService;
-            //    ENVIRONMENT_VARIABLES.ClientId = json.ClientId;
-            //    ENVIRONMENT_VARIABLES.ClientSecret = json.ClientSecret;
-            //    ENVIRONMENT_VARIABLES.Code = json.Code;
-            //    ENVIRONMENT_VARIABLES.AccessToken = json.AccessToken;
-            //    ENVIRONMENT_VARIABLES.RefreshToken = json.RefreshToken;
-            //    ENVIRONMENT_VARIABLES.ExperisIn = json.ExperisIn;
-            //    ENVIRONMENT_VARIABLES.RequestLimitMax = json.RequestLimitMax;
-            //    ENVIRONMENT_VARIABLES.RequestLimitCount = json.RequestLimitCount;
-            //    ENVIRONMENT_VARIABLES.RequestLimitStart = json.RequestLimitStart;
-            //    if(!ENVIRONMENT_VARIABLES.StartDate.HasValue)
-            //        ENVIRONMENT_VARIABLES.StartDate = json.StartDate;
-            //    if (!ENVIRONMENT_VARIABLES.EndDate.HasValue)
-            //        ENVIRONMENT_VARIABLES.EndDate = json.EndDate;
-            //}
-            //else
-            //{
-            //    ENVIRONMENT_VARIABLES.SaveJson();
-            //}
+            if (json != null)
+            {
+                ENVIRONMENT_VARIABLES.MyEmail = json.MyEmail;
+                ENVIRONMENT_VARIABLES.MyEmailPassword = json.MyEmailPassword;
+                ENVIRONMENT_VARIABLES.DataUriService = json.DataUriService;
+                ENVIRONMENT_VARIABLES.ClientId = json.ClientId;
+                ENVIRONMENT_VARIABLES.ClientSecret = json.ClientSecret;
+                ENVIRONMENT_VARIABLES.Code = json.Code;
+                ENVIRONMENT_VARIABLES.AccessToken = json.AccessToken;
+                ENVIRONMENT_VARIABLES.RefreshToken = json.RefreshToken;
+                ENVIRONMENT_VARIABLES.ExperisIn = json.ExperisIn;
+                ENVIRONMENT_VARIABLES.RequestLimitMax = json.RequestLimitMax;
+                ENVIRONMENT_VARIABLES.RequestLimitCount = json.RequestLimitCount;
+                ENVIRONMENT_VARIABLES.RequestLimitStart = json.RequestLimitStart;
+                if (!ENVIRONMENT_VARIABLES.StartDate.HasValue)
+                    ENVIRONMENT_VARIABLES.StartDate = json.StartDate;
+                if (!ENVIRONMENT_VARIABLES.EndDate.HasValue)
+                    ENVIRONMENT_VARIABLES.EndDate = json.EndDate;
+            }
+            else
+            {
+                ENVIRONMENT_VARIABLES.SaveJson();
+            }
         }
 
         public string MyEmail
@@ -109,18 +109,18 @@
             set => Environment.SetEnvironmentVariable("END_DATE", value.ToString());
         }
 
-        //public static Info LoadJson()
-        //    => !File.Exists(filePath) ? null : JsonConvert.DeserializeObject<Info>(File.ReadAllText(filePath));
+        public static Info LoadJson()
+            => !File.Exists(filePath) ? null : JsonConvert.DeserializeObject<Info>(File.ReadAllText(filePath));
 
         private Info()
         { }
 
-        //public void SaveJson()
-        //{
-        //    var json = JsonConvert.SerializeObject(this);
-        //    Console.WriteLine("Saving enviroments json at {0}", filePath);
-        //    File.WriteAllText(filePath, json);
-        //}
+        public void SaveJson()
+        {
+            var json = JsonConvert.SerializeObject(this);
+            Console.WriteLine("Saving enviroments json at {0}", filePath);
+            File.WriteAllText(filePath, json);
+        }
     }
 
 }

@@ -91,7 +91,7 @@
             }
             finally
             {
-                //ENVIRONMENT_VARIABLES.SaveJson();
+                ENVIRONMENT_VARIABLES.SaveJson();
                 Console.WriteLine("Finished at {0}", DateTime.Now.ToString());
                 var environmentJson = JObject.Parse(JsonConvert.SerializeObject(ENVIRONMENT_VARIABLES));
 

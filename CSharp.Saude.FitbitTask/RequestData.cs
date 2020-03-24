@@ -43,7 +43,7 @@
             IRestResponse<T> ret;
             if (LIMIT_COUNT >= ENVIRONMENT_VARIABLES.RequestLimitMax)
             {
-                //ENVIRONMENT_VARIABLES.SaveJson();
+                ENVIRONMENT_VARIABLES.SaveJson();
                 var limitTime = ENVIRONMENT_VARIABLES.RequestLimitStart.Value.AddHours(1);
                 //var timeToWait = new TimeSpan(1, 0, 0);
                 var timeToWait = limitTime - DateTime.Now;
@@ -201,7 +201,7 @@
             }
             finally
             {
-                //ENVIRONMENT_VARIABLES.SaveJson();
+                ENVIRONMENT_VARIABLES.SaveJson();
 
                 if (mappedDatas.Any())
                     callBack(mappedDatas, DateTime.Now);
