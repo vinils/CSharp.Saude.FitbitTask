@@ -8,7 +8,6 @@ docker-machine ssh dckmyhealth1 docker run -it -d --name fitbit-task -e MY_EMAIL
 docker-machine ssh dckmyhealth1 docker start fitbit-task
 docker-machine ssh dckmyhealth1 docker logs -f fitbit-task
 
-::docker exec 5648909f78a8 powershell -command "DTExec.exe /f .\import.dtsx"
-::docker exec 5648909f78a8 powershell -command 'sqlcmd -Q "EXEC [DataDW].[dbo].[SP_Reload]"'
+docker-machine ssh dckmyhealth1 docker exec -it data_dbdw bash /DataAnalyze/SQL.DataDW/import-datacontext.sh
 
 schtasks /query /TN "Fitbit Task" >NUL 2>&1 || schtasks /create /xml ".\TaskScheduler.xml" /tn "Fitbit Task" /ru %USERDOMAIN%\%USERNAME% /rp %1 
