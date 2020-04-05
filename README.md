@@ -5,7 +5,7 @@ Load fitbit data task
 [![Docker Stars](https://img.shields.io/docker/stars/vinils/csharp-saude-fitbittask.svg)](https://hub.docker.com/r/vinils/csharp-saude-fitbittask)
 <a href="https://hub.docker.com/r/vinils/csharp-saude-fitbittask/builds" target="_blank">Docker Builds</a>
 
-git clone --recurse-submodules https://github.com/vinils/CSharp.Saude.FitbitTask.git CSharp.Saude.FitbitTask_ch  
+git clone --recurse-submodules https://github.com/vinils/CSharp.Saude.FitbitTask.git  
 cd CSharp.Saude.FitbitTask  
 git submodule update --init --recursive  
 git submodule update --remote --recursive  
